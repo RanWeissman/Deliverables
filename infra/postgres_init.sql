@@ -1,0 +1,2 @@
+CREATE DATABASE vehicle_db;
+CREATE DATABASE rental_db;

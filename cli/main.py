@@ -12,6 +12,9 @@ def cli():
     """DriveNow API CLI"""
     pass
 
+from small_example import run_example
+cli.add_command(run_example, name="demo")
+
 @cli.group()
 def cars():
     """Manage cars in the fleet"""
@@ -85,14 +88,16 @@ def rentals():
 @rentals.command("create")
 @click.option("--car-id", required=True, type=int)
 @click.option("--customer-id", required=True, type=int)
+@click.option("--customer-name", required=True, help="Customer Name")
 @click.option("--start", required=True, help="Start date (YYYY-MM-DD)")
 @click.option("--end", required=True, help="End date (YYYY-MM-DD)")
-def create_rental(car_id, customer_id, start, end):
+def create_rental(car_id, customer_id, customer_name, start, end):
     """Create a new rental"""
     with httpx.Client(base_url=GATEWAY_URL) as client:
         payload = {
             "car_id": car_id,
             "customer_id": customer_id,
+            "customer_name": customer_name,
             "start_date": f"{start}T00:00:00Z",
             "end_date": f"{end}T00:00:00Z"
         }

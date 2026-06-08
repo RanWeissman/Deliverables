@@ -1,9 +1,8 @@
-```text
 DriveNow/
 ├── .git/
 ├── .gitignore
 ├── docker-compose.yml
-├── infra/
+├── infrastructure/
 │   ├── postgres_init.sql
 │   └── prometheus.yml
 ├── md/

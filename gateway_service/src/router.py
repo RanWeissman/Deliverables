@@ -26,6 +26,7 @@ async def route_request(request: Request, path: str, explicit_body: bytes = None
 
     headers = dict(request.headers)
     headers.pop("host", None)
+    headers.pop("content-length", None)
     
     body = explicit_body if explicit_body is not None else await request.body()
     

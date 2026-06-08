@@ -12,7 +12,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./infra/postgres_init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./infrastructure/postgres_init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - drivenow_net
     healthcheck:
@@ -30,8 +30,6 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
     networks:
       - drivenow_net
     healthcheck:
@@ -44,16 +42,71 @@ services:
     image: prom/prometheus:latest
     container_name: prometheus
     volumes:
-      - ./infra/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./infrastructure/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
     ports:
       - "9090:9090"
     networks:
       - drivenow_net
 
+  vehicle_service:
+    build: ./vehicle_service
+    container_name: vehicle_service
+    environment:
+      - DATABASE_URL=postgresql://drivenow_user:drivenow_password@postgres:5432/vehicle_db
+      - PYTHONPATH=/app/src
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - drivenow_net
+
+  rental_service:
+    build: ./rental_service
+    container_name: rental_service
+    environment:
+      - DATABASE_URL=postgresql://drivenow_user:drivenow_password@postgres:5432/rental_db
+      - VEHICLE_SERVICE_URL=http://vehicle_service:8000
+      - PYTHONPATH=/app/src
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - drivenow_net
+
+  return_service:
+    build: ./return_service
+    container_name: return_service
+    environment:
+      - RABBITMQ_URI=amqp://guest:guest@rabbitmq:5672/
+      - RENTAL_SERVICE_URL=http://rental_service:8000
+      - VEHICLE_SERVICE_URL=http://vehicle_service:8000
+      - PYTHONPATH=/app/src
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - drivenow_net
+
+  gateway_service:
+    build: ./gateway_service
+    container_name: gateway_service
+    ports:
+      - "8000:8000"
+    environment:
+      - VEHICLE_SERVICE_URL=http://vehicle_service:8000
+      - RENTAL_SERVICE_URL=http://rental_service:8000
+      - RETURN_SERVICE_URL=http://return_service:8000
+      - PYTHONPATH=/app/src
+    depends_on:
+      - vehicle_service
+      - rental_service
+      - return_service
+    networks:
+      - drivenow_net
+
 volumes:
   postgres_data:
-  rabbitmq_data:
   prometheus_data:
 
 networks:

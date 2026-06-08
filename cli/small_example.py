@@ -65,7 +65,7 @@ def run_example():
                 "car_id": target_car_id,
                 "customer_id": 999,
                 "customer_name": "John Doe",
-                "start_date": "2026-06-10T10:00:00Z",
+                "start_date": "2026-06-01T10:00:00Z",
                 "end_date": "2026-06-15T10:00:00Z"
             }
             try:

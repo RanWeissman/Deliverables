@@ -1,6 +1,6 @@
 import logging
 import sys
-from .config import settings
+from config import settings
 
 def get_logger(name: str | None = None) -> logging.Logger:
     logger_name = f"[{settings.service_name}]"

@@ -3,7 +3,6 @@ from typing import Optional
 from datetime import datetime
 
 class CarCreate(BaseModel):
-    make: str
     model: str
     year: int
     status: str = "Available"
@@ -15,6 +14,7 @@ class CarUpdate(BaseModel):
 class RentalCreate(BaseModel):
     car_id: int
     customer_id: int
+    customer_name: str
     start_date: datetime
     end_date: datetime
 

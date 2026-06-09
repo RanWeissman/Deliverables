@@ -2,13 +2,14 @@ from fastapi import FastAPI
 from prometheus_fastapi_instrumentator import Instrumentator
 
 from routers import rentals
-from logger import get_logger
+from utils.logger import get_logger
+from config import settings
 from db.database import SessionLocal
 from db.models import Rental
 from metrics import ONGOING_RENTALS
 from datetime import datetime
 
-logger = get_logger("main")
+logger = get_logger(settings.service_name, "main")
 
 app = FastAPI(title="Rental Service API")
 

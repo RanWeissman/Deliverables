@@ -1,0 +1,10 @@
+[project]
+name = "utils"
+version = "0.1.0"
+description = "Shared utilities for DriveNow microservices"
+requires-python = ">=3.10"
+dependencies = [
+    "pydantic>=2.0.0",
+    "pydantic-settings>=2.0.0",
+    "sqlalchemy>=2.0.0",
+]

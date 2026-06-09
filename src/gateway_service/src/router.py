@@ -3,11 +3,12 @@ from fastapi import Request, HTTPException
 from fastapi.responses import Response
 from config import settings
 import json
-from logger import get_logger
-from schemas import ReturnRequest
+from utils.logger import get_logger
+from config import settings
+from utils.schemas import ReturnRequest
 from rabbitmq import publish_event
 
-logger = get_logger("router")
+logger = get_logger(settings.service_name, "router")
 
 client = httpx.AsyncClient()
 

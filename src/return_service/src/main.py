@@ -3,9 +3,10 @@ from fastapi import FastAPI
 from prometheus_fastapi_instrumentator import Instrumentator
 
 from rabbitmq import consume_events
-from logger import get_logger
+from utils.logger import get_logger
+from config import settings
 
-logger = get_logger("main")
+logger = get_logger(settings.service_name, "main")
 
 app = FastAPI(title="Return Service API")
 

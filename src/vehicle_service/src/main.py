@@ -2,13 +2,14 @@ from fastapi import FastAPI
 from prometheus_fastapi_instrumentator import Instrumentator
 
 from routers import cars
-from logger import get_logger
+from utils.logger import get_logger
+from config import settings
 from db.database import SessionLocal
 from db.models import Car
 from db.enums import CarStatus
 from metrics import ACTIVE_CARS
 
-logger = get_logger("main")
+logger = get_logger(settings.service_name, "main")
 
 app = FastAPI(title="Vehicle Service API")
 

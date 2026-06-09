@@ -4,10 +4,11 @@ from typing import Optional
 
 from router import route_request
 from middleware import LoggingMiddleware
-from logger import get_logger
-from schemas import CarCreate, CarUpdate, RentalCreate, ReturnRequest
+from utils.logger import get_logger
+from config import settings
+from utils.schemas import CarCreate, CarUpdate, RentalCreate, ReturnRequest
 
-logger = get_logger("main")
+logger = get_logger(settings.service_name, "main")
 
 app = FastAPI(title="DriveNow API Gateway")
 

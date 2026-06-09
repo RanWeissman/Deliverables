@@ -72,7 +72,7 @@ def update_status(car_id, status):
     with httpx.Client(base_url=GATEWAY_URL) as client:
         payload = {"status": status}
         try:
-            response = client.put(f"/cars/{car_id}/status", json=payload)
+            response = client.put(f"/cars/{car_id}", json=payload)
             response.raise_for_status()
             console.print("[green]Successfully updated car status![/green]")
             print_json(data=response.json())

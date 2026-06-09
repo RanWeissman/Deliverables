@@ -14,7 +14,7 @@ WORKDIR /app/service
 COPY gateway_service/pyproject.toml gateway_service/uv.lock ./
 
 # Install dependencies using uv sync (frozen ensures exact versions are used)
-RUN uv sync --frozen --no-cache
+RUN uv sync --frozen
 
 # Copy the rest of the application
 COPY gateway_service/ .

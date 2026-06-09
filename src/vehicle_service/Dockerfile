@@ -14,7 +14,7 @@ WORKDIR /app/service
 COPY vehicle_service/pyproject.toml vehicle_service/uv.lock ./
 
 # Install dependencies using uv sync (frozen ensures exact versions are used)
-RUN uv sync --frozen --no-cache
+RUN uv sync --frozen
 
 # Copy the rest of the application
 COPY vehicle_service/ .

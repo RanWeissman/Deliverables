@@ -8,6 +8,7 @@ from sqlalchemy.exc import IntegrityError
 from db.database import get_db
 from db.models import Rental
 from schemas import RentalCreate, RentalResponse
+from metrics import ONGOING_RENTALS
 from config import settings
 
 router = APIRouter(
@@ -64,6 +65,7 @@ def create_rental(rental: RentalCreate, db: Session = Depends(get_db)):
     else:
         logger.info(f"Future rental created for car {rental.car_id}. Skipping Vehicle Service API call.")
 
+    ONGOING_RENTALS.inc()
     return db_rental
 
 @router.put("/{id}/end", response_model=RentalResponse)
@@ -75,6 +77,8 @@ def end_rental(id: int, db: Session = Depends(get_db)):
     db_rental.end_date = datetime.now()
     db.commit()
     db.refresh(db_rental)
+    
+    ONGOING_RENTALS.dec()
     
     logger.info(f"Rental {id} ended.")
     return db_rental

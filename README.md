@@ -167,6 +167,15 @@ The project also includes an automated Python script that seamlessly runs throug
 uv run --project src/cli src/cli/small_example.py
 ```
 
+### 5. Viewing Live Metrics
+
+You can use the CLI to fetch the exact number of active cars and ongoing rentals directly from Prometheus without leaving the terminal. This command contacts the Prometheus HTTP API and formats the live business metrics into a readable table.
+
+**Using the CLI:**
+```bash
+uv run --project src/cli src/cli/main.py metrics show
+```
+
 ---
 
 ## Visual Proof of Observability

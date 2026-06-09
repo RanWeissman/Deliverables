@@ -6,6 +6,7 @@ from rich import print_json
 
 console = Console()
 GATEWAY_URL = "http://127.0.0.1:8000"
+PROMETHEUS_URL = "http://127.0.0.1:9090"
 
 @click.group()
 def cli():
@@ -132,6 +133,48 @@ def process_return(rental_id, car_id):
             console.print(f"[red]Error processing return:[/red] {e}")
             if hasattr(e, 'response') and e.response:
                 console.print(e.response.text)
+
+@cli.group()
+def metrics():
+    """View system metrics"""
+    pass
+
+@metrics.command("show")
+def show_metrics():
+    """Show live business metrics from Prometheus"""
+    with httpx.Client(base_url=PROMETHEUS_URL) as client:
+        try:
+            # Fetch active cars
+            cars_res = client.get("/api/v1/query", params={"query": "active_cars_total"})
+            cars_res.raise_for_status()
+            cars_data = cars_res.json()
+            
+            # Fetch ongoing rentals
+            rentals_res = client.get("/api/v1/query", params={"query": "ongoing_rentals_total"})
+            rentals_res.raise_for_status()
+            rentals_data = rentals_res.json()
+            
+            # Extract values
+            active_cars = "0"
+            if cars_data.get("data", {}).get("result"):
+                active_cars = cars_data["data"]["result"][0]["value"][1]
+                
+            ongoing_rentals = "0"
+            if rentals_data.get("data", {}).get("result"):
+                ongoing_rentals = rentals_data["data"]["result"][0]["value"][1]
+                
+            table = Table(title="Live System Metrics")
+            table.add_column("Metric Name", style="cyan")
+            table.add_column("Current Value", justify="right", style="green")
+            
+            table.add_row("Active Available Cars", str(active_cars))
+            table.add_row("Ongoing Rentals", str(ongoing_rentals))
+            
+            console.print(table)
+            
+        except httpx.HTTPError as e:
+            console.print(f"[red]Error fetching metrics from Prometheus:[/red] {e}")
+            console.print("[yellow]Make sure Prometheus is running via Docker Compose.[/yellow]")
 
 if __name__ == '__main__':
     cli()

@@ -12,7 +12,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./infrastructure/postgres_init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ../database/postgres_init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - drivenow_net
     healthcheck:
@@ -42,7 +42,7 @@ services:
     image: prom/prometheus:latest
     container_name: prometheus
     volumes:
-      - ./infrastructure/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ../monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
     ports:
       - "9090:9090"
@@ -50,7 +50,7 @@ services:
       - drivenow_net
 
   vehicle_service:
-    build: ./vehicle_service
+    build: ../../src/vehicle_service
     container_name: vehicle_service
     environment:
       - DATABASE_URL=postgresql://drivenow_user:drivenow_password@postgres:5432/vehicle_db
@@ -62,7 +62,7 @@ services:
       - drivenow_net
 
   rental_service:
-    build: ./rental_service
+    build: ../../src/rental_service
     container_name: rental_service
     environment:
       - DATABASE_URL=postgresql://drivenow_user:drivenow_password@postgres:5432/rental_db
@@ -75,7 +75,7 @@ services:
       - drivenow_net
 
   return_service:
-    build: ./return_service
+    build: ../../src/return_service
     container_name: return_service
     environment:
       - RABBITMQ_URI=amqp://guest:guest@rabbitmq:5672/
@@ -89,7 +89,7 @@ services:
       - drivenow_net
 
   gateway_service:
-    build: ./gateway_service
+    build: ../../src/gateway_service
     container_name: gateway_service
     ports:
       - "8000:8000"

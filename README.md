@@ -83,14 +83,14 @@ cd Deliverables
 
 **3. Run the server:**
 ```bash
-docker-compose up --build -d
+docker-compose -f infrastructure/deployment/docker-compose.yml up --build
 ```
 
 This single command will automatically spin up all infrastructure (PostgreSQL, RabbitMQ, Prometheus) and the internal microservices (Gateway, Vehicle, Rental, Return). 
 
 **4. Run the small example (End-to-End Demo):**
 ```bash
-uv run --project cli cli/small_example.py
+uv run --project src/cli src/cli/small_example.py
 ``` 
 
 ## How to Use the API or CLI
@@ -169,7 +169,7 @@ The project also includes an automated Python script that seamlessly runs throug
 
 **Using the CLI:**
 ```bash
-uv run --project cli cli/small_example.py
+uv run --project src/cli src/cli/small_example.py
 ```
 
 ---
@@ -178,8 +178,8 @@ uv run --project cli cli/small_example.py
 
 ### The Asynchronous Log Trace
 
-![Asynchronous Log Trace](./images/logging_screenshot.jpg)
+![Asynchronous Log Trace](./docs/images/logging_screenshot.jpg)
 
 ### The Prometheus Dashboard
 
-![Prometheus Dashboard](./images/prometheus_screenshot.jpg)
+![Prometheus Dashboard](./docs/images/prometheus_screenshot.jpg)

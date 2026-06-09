@@ -50,7 +50,9 @@ services:
       - drivenow_net
 
   vehicle_service:
-    build: ../../src/vehicle_service
+    build:
+      context: ../../src
+      dockerfile: vehicle_service/Dockerfile
     container_name: vehicle_service
     environment:
       - DATABASE_URL=postgresql://drivenow_user:drivenow_password@postgres:5432/vehicle_db
@@ -62,7 +64,9 @@ services:
       - drivenow_net
 
   rental_service:
-    build: ../../src/rental_service
+    build:
+      context: ../../src
+      dockerfile: rental_service/Dockerfile
     container_name: rental_service
     environment:
       - DATABASE_URL=postgresql://drivenow_user:drivenow_password@postgres:5432/rental_db
@@ -75,7 +79,9 @@ services:
       - drivenow_net
 
   return_service:
-    build: ../../src/return_service
+    build:
+      context: ../../src
+      dockerfile: return_service/Dockerfile
     container_name: return_service
     environment:
       - RABBITMQ_URI=amqp://guest:guest@rabbitmq:5672/
@@ -89,7 +95,9 @@ services:
       - drivenow_net
 
   gateway_service:
-    build: ../../src/gateway_service
+    build:
+      context: ../../src
+      dockerfile: gateway_service/Dockerfile
     container_name: gateway_service
     ports:
       - "8000:8000"

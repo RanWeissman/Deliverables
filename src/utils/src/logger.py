@@ -1,9 +1,8 @@
 import logging
 import sys
-from config import settings
 
-def get_logger(name: str | None = None) -> logging.Logger:
-    logger_name = f"[{settings.service_name}]"
+def get_logger(service_name: str, name: str | None = None) -> logging.Logger:
+    logger_name = f"[{service_name}]"
     if name:
         logger_name = f"{logger_name} {name}"
         

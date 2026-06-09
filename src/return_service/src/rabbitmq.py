@@ -3,9 +3,10 @@ import pika
 import httpx
 import time
 from config import settings
-from logger import get_logger
+from utils.logger import get_logger
+from config import settings
 
-logger = get_logger("rabbitmq")
+logger = get_logger(settings.service_name, "rabbitmq")
 
 MAIN_RETURNS_QUEUE_NAME = "returns_queue"
 DEAD_LETTER_QUEUE_NAME = "returns_dead_letter_queue"

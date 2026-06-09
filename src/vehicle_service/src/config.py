@@ -1,9 +1,8 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from utils.config import BaseServiceSettings
 
-class Settings(BaseSettings):
+class Settings(BaseServiceSettings):
     service_name: str = "VehicleService"
     database_url: str
 
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
 settings = Settings()

@@ -2,7 +2,6 @@ import threading
 from fastapi import FastAPI
 from prometheus_fastapi_instrumentator import Instrumentator
 
-from routers import returns
 from rabbitmq import consume_events
 from logger import get_logger
 
@@ -10,7 +9,6 @@ logger = get_logger("main")
 
 app = FastAPI(title="Return Service API")
 
-app.include_router(returns.router)
 
 instrumentator = Instrumentator().instrument(app).expose(app)
 

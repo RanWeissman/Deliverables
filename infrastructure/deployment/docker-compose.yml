@@ -97,11 +97,17 @@ services:
       - VEHICLE_SERVICE_URL=http://vehicle_service:8000
       - RENTAL_SERVICE_URL=http://rental_service:8000
       - RETURN_SERVICE_URL=http://return_service:8000
+      - RABBITMQ_URI=amqp://guest:guest@rabbitmq:5672/
       - PYTHONPATH=/app/src
     depends_on:
-      - vehicle_service
-      - rental_service
-      - return_service
+      rabbitmq:
+        condition: service_healthy
+      vehicle_service:
+        condition: service_started
+      rental_service:
+        condition: service_started
+      return_service:
+        condition: service_started
     networks:
       - drivenow_net
 

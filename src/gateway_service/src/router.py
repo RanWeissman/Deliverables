@@ -2,19 +2,35 @@ import httpx
 from fastapi import Request, HTTPException
 from fastapi.responses import Response
 from config import settings
+import json
 from logger import get_logger
+from schemas import ReturnRequest
+from rabbitmq import publish_event
 
 logger = get_logger("router")
 
 client = httpx.AsyncClient()
 
 async def route_request(request: Request, path: str, explicit_body: bytes = None):
+    if path.startswith("returns"):
+        body = explicit_body if explicit_body is not None else await request.body()
+        try:
+            req_data = ReturnRequest.model_validate_json(body)
+            publish_event(rental_id=req_data.rental_id, car_id=req_data.car_id)
+            logger.info(f"Gateway received return request, published Event for rental {req_data.rental_id}")
+            return Response(
+                content=json.dumps({"message": "Return request accepted and queued for processing"}),
+                status_code=202,
+                media_type="application/json"
+            )
+        except Exception as e:
+            logger.error(f"API failed to queue return request: {str(e)}")
+            raise HTTPException(status_code=500, detail="Failed to queue return request")
+
     if path.startswith("cars"):
         base_url = settings.vehicle_service_url
     elif path.startswith("rentals"):
         base_url = settings.rental_service_url
-    elif path.startswith("returns"):
-        base_url = settings.return_service_url
     else:
         raise HTTPException(status_code=404, detail="Route not found")
 

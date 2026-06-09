@@ -36,19 +36,23 @@ graph TD
     %% Gateway -> Microservices (Synchronous)
     GatewayService -- http --> VehicleService
     GatewayService -- http --> RentalService
-    GatewayService -- http --> ReturnService
 
     %% Microservice -> Microservice (Synchronous HTTP)
     RentalService -- http --> VehicleService
     ReturnService -- http --> RentalService
     ReturnService -- http --> VehicleService
 
-    %% Microservices <-> Messaging Layer (Asynchronous AMQP)
-    ReturnService -- AMQP --> RabbitMQ
+    %% Gateway -> Messaging Layer (Asynchronous)
+    GatewayService -- AMQP --> RabbitMQ
+
+    %% Messaging Layer -> Microservices (Asynchronous Consumer)
     RabbitMQ -- AMQP --> ReturnService
     
-    %% Note: Other services may publish to RabbitMQ, 
-    %% but return_service is explicitly connected via RABBITMQ_URI
+    %% Microservices -> Messaging Layer (Retries / DLQ)
+    ReturnService -- AMQP --> RabbitMQ
+    
+    %% Note: gateway_service publishes ReturnRequests to RabbitMQ.
+    %% return_service consumes these messages and may publish back for retries.
 
     %% Microservices -> Data Layer
     VehicleService -- TCP --> VehicleDB

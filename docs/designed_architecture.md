@@ -31,20 +31,21 @@ graph TD
     %% Connections & Flows
 
     %% Client -> Gateway
-    Client -- HTTP --> GatewayService
+    Client -- http --> GatewayService
 
     %% Gateway -> Microservices (Synchronous)
-    GatewayService -- HTTP --> VehicleService
-    GatewayService -- HTTP --> RentalService
-    GatewayService -- HTTP --> ReturnService
+    GatewayService -- http --> VehicleService
+    GatewayService -- http --> RentalService
+    GatewayService -- http --> ReturnService
 
     %% Microservice -> Microservice (Synchronous HTTP)
-    RentalService -- HTTP --> VehicleService
-    ReturnService -- HTTP --> RentalService
-    ReturnService -- HTTP --> VehicleService
+    RentalService -- http --> VehicleService
+    ReturnService -- http --> RentalService
+    ReturnService -- http --> VehicleService
 
-    %% Microservices -> Messaging Layer (Asynchronous AMQP)
+    %% Microservices <-> Messaging Layer (Asynchronous AMQP)
     ReturnService -- AMQP --> RabbitMQ
+    RabbitMQ -- AMQP --> ReturnService
     
     %% Note: Other services may publish to RabbitMQ, 
     %% but return_service is explicitly connected via RABBITMQ_URI

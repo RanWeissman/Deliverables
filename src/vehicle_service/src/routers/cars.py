@@ -8,6 +8,7 @@ from db.database import get_db
 from db.models import Car
 from db.enums import CarStatus
 from schemas import CarCreate, CarUpdate, CarResponse
+from metrics import ACTIVE_CARS
 
 router = APIRouter(
     prefix="/cars",
@@ -22,6 +23,10 @@ def create_car(car: CarCreate, db: Session = Depends(get_db)):
     db.add(db_car)
     db.commit()
     db.refresh(db_car)
+    
+    if db_car.status == CarStatus.AVAILABLE:
+        ACTIVE_CARS.inc()
+        
     logger.info(f"Created new car with id {db_car.id}")
     return db_car
 
@@ -56,6 +61,8 @@ def update_car(id: int, car_update: CarUpdate, db: Session = Depends(get_db)):
     
     if not db_car:
         raise HTTPException(status_code=404, detail="Car not found")
+        
+    old_status = db_car.status
         
     # 2. Payload Extraction
     update_data = car_update.model_dump(exclude_unset=True)
@@ -94,6 +101,14 @@ def update_car(id: int, car_update: CarUpdate, db: Session = Depends(get_db)):
 
     # 5. Finalization
     db.refresh(db_car)
+    
+    new_status = db_car.status
+    if old_status != new_status:
+        if new_status == CarStatus.AVAILABLE:
+            ACTIVE_CARS.inc()
+        elif old_status == CarStatus.AVAILABLE:
+            ACTIVE_CARS.dec()
+            
     return db_car
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -102,7 +117,12 @@ def delete_car(id: int, db: Session = Depends(get_db)):
     if not car:
         raise HTTPException(status_code=404, detail="Car not found")
     
+    old_status = car.status
     db.delete(car)
     db.commit()
+    
+    if old_status == CarStatus.AVAILABLE:
+        ACTIVE_CARS.dec()
+        
     logger.info(f"Deleted car {id}")
     return None

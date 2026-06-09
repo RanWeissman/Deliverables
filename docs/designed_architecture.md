@@ -48,11 +48,8 @@ graph TD
     %% Messaging Layer -> Microservices (Asynchronous Consumer)
     RabbitMQ -- AMQP --> ReturnService
     
-    %% Microservices -> Messaging Layer (Retries / DLQ)
-    ReturnService -- AMQP --> RabbitMQ
-    
     %% Note: gateway_service publishes ReturnRequests to RabbitMQ.
-    %% return_service consumes these messages and may publish back for retries.
+    %% return_service consumes these messages.
 
     %% Microservices -> Data Layer
     VehicleService -- TCP --> VehicleDB

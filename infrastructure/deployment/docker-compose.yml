@@ -56,7 +56,7 @@ services:
     container_name: vehicle_service
     environment:
       - DATABASE_URL=postgresql://drivenow_user:drivenow_password@postgres:5432/vehicle_db
-      - PYTHONPATH=/app/src
+      - PYTHONPATH=/app/service/src
     depends_on:
       postgres:
         condition: service_healthy
@@ -71,7 +71,7 @@ services:
     environment:
       - DATABASE_URL=postgresql://drivenow_user:drivenow_password@postgres:5432/rental_db
       - VEHICLE_SERVICE_URL=http://vehicle_service:8000
-      - PYTHONPATH=/app/src
+      - PYTHONPATH=/app/service/src
     depends_on:
       postgres:
         condition: service_healthy
@@ -87,7 +87,7 @@ services:
       - RABBITMQ_URI=amqp://guest:guest@rabbitmq:5672/
       - RENTAL_SERVICE_URL=http://rental_service:8000
       - VEHICLE_SERVICE_URL=http://vehicle_service:8000
-      - PYTHONPATH=/app/src
+      - PYTHONPATH=/app/service/src
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -106,7 +106,7 @@ services:
       - RENTAL_SERVICE_URL=http://rental_service:8000
       - RETURN_SERVICE_URL=http://return_service:8000
       - RABBITMQ_URI=amqp://guest:guest@rabbitmq:5672/
-      - PYTHONPATH=/app/src
+      - PYTHONPATH=/app/service/src
     depends_on:
       rabbitmq:
         condition: service_healthy

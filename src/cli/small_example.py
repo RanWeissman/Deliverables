@@ -33,6 +33,9 @@ def run_example():
             {"model": "Ford F-150", "year": 2023, "status": "Available"},
             {"model": "Toyota Camry", "year": 2025, "status": "Available"},
             {"model": "BMW X5", "year": 2024, "status": "Available"},
+            {"model": "Mercedes C-Class", "year": 2026, "status": "Available"},
+            {"model": "Audi Q7", "year": 2023, "status": "Available"},
+            {"model": "Volkswagen Golf", "year": 2024, "status": "Available"},
         ]
         
         car_ids = []
@@ -113,6 +116,43 @@ def run_example():
                     print_cars_table(resp.json(), "Fleet After Return")
                 except httpx.HTTPError as e:
                     console.print(f"[red]Failed to verify final fleet state: {e}[/red]")
+                    
+                # 7. Additional Metrics Demo Operations
+                if len(car_ids) >= 8:
+                    console.print("\n[bold yellow]--- 7. Creating 2 Ongoing Rentals (For Metrics Demo) ---[/bold yellow]")
+                    for cid in [car_ids[-1], car_ids[-2]]:
+                        rental_payload = {
+                            "car_id": cid,
+                            "customer_id": 888,
+                            "customer_name": "Metrics Tester",
+                            "start_date": "2026-06-01T10:00:00Z",
+                            "end_date": "2026-12-31T10:00:00Z"
+                        }
+                        try:
+                            client.post("/rentals", json=rental_payload).raise_for_status()
+                            console.print(f"[green]Ongoing rental created for Car ID: {cid}[/green]")
+                        except httpx.HTTPError as e:
+                            console.print(f"[red]Failed to create rental for {cid}: {e}[/red]")
+                    
+                    time.sleep(0.5)
+
+                    console.print("\n[bold yellow]--- 8. Putting 1 Car in Maintenance ---[/bold yellow]")
+                    maint_cid = car_ids[-3]
+                    try:
+                        client.put(f"/cars/{maint_cid}", json={"status": "Maintenance"}).raise_for_status()
+                        console.print(f"[green]Car ID {maint_cid} moved to maintenance.[/green]")
+                    except httpx.HTTPError as e:
+                        console.print(f"[red]Failed to move {maint_cid} to maintenance: {e}[/red]")
+                        
+                    time.sleep(0.5)
+                    
+                    console.print("\n[bold yellow]--- 9. Final Fleet State ---[/bold yellow]")
+                    try:
+                        resp = client.get("/cars")
+                        resp.raise_for_status()
+                        print_cars_table(resp.json(), "Fleet After Extra Operations")
+                    except httpx.HTTPError as e:
+                        console.print(f"[red]Failed to verify final fleet state: {e}[/red]")
 
     console.print("\n[bold cyan]Demo completed successfully![/bold cyan]")
 
